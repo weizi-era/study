@@ -1,0 +1,1224 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="关于学习Android的知识点以及工作过程中遇到的问题记录">
+      
+      
+      
+        <meta name="author" content="weizi-era">
+      
+      
+        <link rel="canonical" href="https://weizi-era.github.io/android/app_startup/">
+      
+      <link rel="icon" href="../../assets/Blog.ico">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.10">
+    
+    
+      
+        <title>app启动流程 - 伟子时代</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1fe995fd.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f1a3b89f.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="blue">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#appandroid11" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="伟子时代" class="md-header__button md-logo" aria-label="伟子时代" data-md-component="logo">
+      
+  <img src="../../assets/icon.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            伟子时代
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              app启动流程
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="伟子时代" class="md-nav__button md-logo" aria-label="伟子时代" data-md-component="logo">
+      
+  <img src="../../assets/icon.jpg" alt="logo">
+
+    </a>
+    伟子时代
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        介绍
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      <label class="md-nav__link" for="__nav_2">
+        技术博文
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="技术博文" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          技术博文
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        Android
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Android" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Android
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../media_server_build/" class="md-nav__link">
+        流媒体服务器搭建
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../android_startup/" class="md-nav__link">
+        Android系统启动流程
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          app启动流程
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        app启动流程
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#launcher" class="md-nav__link">
+    启动流程一（Launcher）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程一（Launcher）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launcheramsactivity" class="md-nav__link">
+    Launcher向AMS发送启动Activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ams" class="md-nav__link">
+    启动流程二（AMS）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程二（AMS）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amsactivity" class="md-nav__link">
+    AMS启动Activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app" class="md-nav__link">
+    启动流程三（app）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程三（app）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    新的进程启动
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activity" class="md-nav__link">
+    创建activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        关于
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#launcher" class="md-nav__link">
+    启动流程一（Launcher）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程一（Launcher）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#launcheramsactivity" class="md-nav__link">
+    Launcher向AMS发送启动Activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ams" class="md-nav__link">
+    启动流程二（AMS）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程二（AMS）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amsactivity" class="md-nav__link">
+    AMS启动Activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#app" class="md-nav__link">
+    启动流程三（app）
+  </a>
+  
+    <nav class="md-nav" aria-label="启动流程三（app）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    新的进程启动
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activity" class="md-nav__link">
+    创建activity
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="appandroid11">app启动流程——基于Android11分析<a class="headerlink" href="#appandroid11" title="Permanent link">&para;</a></h1>
+<p>前两天分析了Android系统的启动流程后，我们知道Android系统启动最终会走到Launcher，也就是我们所看见的”桌面“，app的启动是从用户点击桌面的icon开始的，当我们点击屏幕上的软件图标时，就可以打开这个软件，这个过程看似也很简单，其实中间包含了很多的底层交互，接下来，我会从源码角度一步一步分析这个流程，看了不明白的，欢迎来打我。。</p>
+<h2 id="launcher">启动流程一（Launcher）<a class="headerlink" href="#launcher" title="Permanent link">&para;</a></h2>
+<p>我们手机桌面——Launcher其实也是一个app，我们所看见的是它的一个activity，里面是一个RecyclerView包裹着所有的应用图标，图标中包含安装apk时解析的应用默认启动页等信息，在点击应用图标时，即将要启动的App和Launcher、AMS、Zygote都运行在不同进程中，所以他们之间的通信是通过binder去完成的，所以AMS是必不可少的。下面我们通过源码来看下：</p>
+<h3 id="launcheramsactivity">Launcher向AMS发送启动Activity<a class="headerlink" href="#launcheramsactivity" title="Permanent link">&para;</a></h3>
+<p>当用户点击应用图标时，调用startActivitySafely方法：</p>
+<p><strong><em>packages/apps/Launcher3/src/com/android/launcher3/Launcher.java</em></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">startActivitySafely</span><span class="p">(</span><span class="n">View</span> <span class="n">v</span><span class="p">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="n">ItemInfo</span> <span class="n">item</span><span class="p">,</span>
+        <span class="nd">@Nullable</span> <span class="n">String</span> <span class="n">sourceContainer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">hasBeenResumed</span><span class="p">())</span> <span class="p">{</span>
+
+        <span class="n">addOnResumeCallback</span><span class="p">(()</span> <span class="o">-&gt;</span> <span class="n">startActivitySafely</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">intent</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">sourceContainer</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mOnDeferredActivityLaunchCallback</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">mOnDeferredActivityLaunchCallback</span><span class="p">.</span><span class="na">run</span><span class="p">();</span>
+            <span class="n">mOnDeferredActivityLaunchCallback</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">boolean</span> <span class="n">success</span> <span class="o">=</span> <span class="kd">super</span><span class="p">.</span><span class="na">startActivitySafely</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">intent</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">sourceContainer</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">success</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="k">instanceof</span> <span class="n">BubbleTextView</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">BubbleTextView</span> <span class="n">btv</span> <span class="o">=</span> <span class="p">(</span><span class="n">BubbleTextView</span><span class="p">)</span> <span class="n">v</span><span class="p">;</span>
+        <span class="n">btv</span><span class="p">.</span><span class="na">setStayPressed</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="n">addOnResumeCallback</span><span class="p">(</span><span class="n">btv</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>最终会走到startActivity中：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startActivity</span><span class="p">(</span><span class="n">Intent</span> <span class="n">intent</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="na">startActivity</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startActivity</span><span class="p">(</span><span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="nd">@Nullable</span> <span class="n">Bundle</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mIntent</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">mIntent</span><span class="p">.</span><span class="na">hasExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_SESSION_TOKEN</span><span class="p">)</span>
+        <span class="o">&amp;&amp;</span> <span class="n">mIntent</span><span class="p">.</span><span class="na">hasExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_CROSS_ACTIVITY</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">TextUtils</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">getPackageName</span><span class="p">(),</span>
+                             <span class="n">intent</span><span class="p">.</span><span class="na">resolveActivity</span><span class="p">(</span><span class="n">getPackageManager</span><span class="p">()).</span><span class="na">getPackageName</span><span class="p">()))</span> <span class="p">{</span>
+            <span class="c1">// Apply Autofill restore mechanism on the started activity by startActivity()</span>
+            <span class="kd">final</span> <span class="n">IBinder</span> <span class="n">token</span> <span class="o">=</span>
+                <span class="n">mIntent</span><span class="p">.</span><span class="na">getIBinderExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_SESSION_TOKEN</span><span class="p">);</span>
+            <span class="c1">// Remove restore ability from current activity</span>
+            <span class="n">mIntent</span><span class="p">.</span><span class="na">removeExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_SESSION_TOKEN</span><span class="p">);</span>
+            <span class="n">mIntent</span><span class="p">.</span><span class="na">removeExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_CROSS_ACTIVITY</span><span class="p">);</span>
+            <span class="c1">// Put restore token</span>
+            <span class="n">intent</span><span class="p">.</span><span class="na">putExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_SESSION_TOKEN</span><span class="p">,</span> <span class="n">token</span><span class="p">);</span>
+            <span class="n">intent</span><span class="p">.</span><span class="na">putExtra</span><span class="p">(</span><span class="n">AutofillManager</span><span class="p">.</span><span class="na">EXTRA_RESTORE_CROSS_ACTIVITY</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">options</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//-1为requestCode表明不需要知道是否启动成功</span>
+        <span class="n">startActivityForResult</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">options</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">startActivityForResult</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>调用startActivityForResult：进入看下</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">startActivityForResult</span><span class="p">(</span><span class="nd">@RequiresPermission</span> <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="p">,</span>
+        <span class="nd">@Nullable</span> <span class="n">Bundle</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mParent</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">transferSpringboardActivityOptions</span><span class="p">(</span><span class="n">options</span><span class="p">);</span>
+        <span class="n">Instrumentation</span><span class="p">.</span><span class="na">ActivityResult</span> <span class="n">ar</span> <span class="o">=</span>
+            <span class="n">mInstrumentation</span><span class="p">.</span><span class="na">execStartActivity</span><span class="p">(</span>
+                <span class="k">this</span><span class="p">,</span> <span class="n">mMainThread</span><span class="p">.</span><span class="na">getApplicationThread</span><span class="p">(),</span> <span class="n">mToken</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span>
+                <span class="n">intent</span><span class="p">,</span> <span class="n">requestCode</span><span class="p">,</span> <span class="n">options</span><span class="p">);</span>
+
+        <span class="p">...</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+      <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>每个activity都持有一个Instrumentation对象，这个函数中传入了mMainThread.getApplicationThread()，它获取到的是ActivityThread的内部类ApplicationThread，这是一个Binder对象，之后AMS通过此对象与app通信</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="n">ActivityResult</span> <span class="nf">execStartActivity</span><span class="p">(</span>
+        <span class="n">Context</span> <span class="n">who</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">contextThread</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">token</span><span class="p">,</span> <span class="n">Activity</span> <span class="n">target</span><span class="p">,</span>
+        <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="p">,</span> <span class="n">Bundle</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span>
+   <span class="p">...</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+
+        <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">ActivityTaskManager</span><span class="p">.</span><span class="na">getService</span><span class="p">().</span><span class="na">startActivity</span><span class="p">(</span><span class="n">whoThread</span><span class="p">,</span>
+                <span class="n">who</span><span class="p">.</span><span class="na">getBasePackageName</span><span class="p">(),</span> <span class="n">who</span><span class="p">.</span><span class="na">getAttributionTag</span><span class="p">(),</span> <span class="n">intent</span><span class="p">,</span>
+                <span class="n">intent</span><span class="p">.</span><span class="na">resolveTypeIfNeeded</span><span class="p">(</span><span class="n">who</span><span class="p">.</span><span class="na">getContentResolver</span><span class="p">()),</span> <span class="n">token</span><span class="p">,</span>
+                <span class="n">target</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">target</span><span class="p">.</span><span class="na">mEmbeddedID</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span> <span class="n">requestCode</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="n">options</span><span class="p">);</span>
+       <span class="p">...</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">IActivityTaskManager</span> <span class="nf">getService</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">IActivityTaskManagerSingleton</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="nd">@UnsupportedAppUsage</span><span class="p">(</span><span class="n">trackingBug</span> <span class="o">=</span> <span class="mi">129726065</span><span class="p">)</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Singleton</span><span class="o">&lt;</span><span class="n">IActivityTaskManager</span><span class="o">&gt;</span> <span class="n">IActivityTaskManagerSingleton</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">&lt;</span><span class="n">IActivityTaskManager</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="n">IActivityTaskManager</span> <span class="nf">create</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">final</span> <span class="n">IBinder</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ServiceManager</span><span class="p">.</span><span class="na">getService</span><span class="p">(</span><span class="n">Context</span><span class="p">.</span><span class="na">ACTIVITY_TASK_SERVICE</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">IActivityTaskManager</span><span class="p">.</span><span class="na">Stub</span><span class="p">.</span><span class="na">asInterface</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>这一步Launcher开始向AMS通信，IActivityTaskManager是一个代理AMS端Binder的对象，之后AMS开始startActivity。 到这里Launcher向AMS请求启动一个Activity的流程就结束了。</p>
+<h2 id="ams">启动流程二（AMS）<a class="headerlink" href="#ams" title="Permanent link">&para;</a></h2>
+<h3 id="amsactivity">AMS启动Activity<a class="headerlink" href="#amsactivity" title="Permanent link">&para;</a></h3>
+<p>现在流程走到了AMS进程中，上面通过代理调用了ATMS的startActivity方法：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">startActivity</span><span class="p">(</span><span class="n">IApplicationThread</span> <span class="n">caller</span><span class="p">,</span> <span class="n">String</span> <span class="n">callingPackage</span><span class="p">,</span>
+                               <span class="n">String</span> <span class="n">callingFeatureId</span><span class="p">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="n">String</span> <span class="n">resolvedType</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">resultTo</span><span class="p">,</span>
+                               <span class="n">String</span> <span class="n">resultWho</span><span class="p">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">startFlags</span><span class="p">,</span> <span class="n">ProfilerInfo</span> <span class="n">profilerInfo</span><span class="p">,</span>
+                               <span class="n">Bundle</span> <span class="n">bOptions</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">startActivityAsUser</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">callingPackage</span><span class="p">,</span> <span class="n">callingFeatureId</span><span class="p">,</span> <span class="n">intent</span><span class="p">,</span> <span class="n">resolvedType</span><span class="p">,</span>
+                               <span class="n">resultTo</span><span class="p">,</span> <span class="n">resultWho</span><span class="p">,</span> <span class="n">requestCode</span><span class="p">,</span> <span class="n">startFlags</span><span class="p">,</span> <span class="n">profilerInfo</span><span class="p">,</span> <span class="n">bOptions</span><span class="p">,</span>
+                               <span class="n">UserHandle</span><span class="p">.</span><span class="na">getCallingUserId</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">int</span> <span class="nf">startActivityAsUser</span><span class="p">(</span><span class="n">IApplicationThread</span> <span class="n">caller</span><span class="p">,</span> <span class="n">String</span> <span class="n">callingPackage</span><span class="p">,</span>
+                               <span class="n">String</span> <span class="n">callingFeatureId</span><span class="p">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="n">String</span> <span class="n">resolvedType</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">resultTo</span><span class="p">,</span>
+                               <span class="n">String</span> <span class="n">resultWho</span><span class="p">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">startFlags</span><span class="p">,</span> <span class="n">ProfilerInfo</span> <span class="n">profilerInfo</span><span class="p">,</span>
+                               <span class="n">Bundle</span> <span class="n">bOptions</span><span class="p">,</span> <span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">startActivityAsUser</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">callingPackage</span><span class="p">,</span> <span class="n">callingFeatureId</span><span class="p">,</span> <span class="n">intent</span><span class="p">,</span> <span class="n">resolvedType</span><span class="p">,</span>
+                               <span class="n">resultTo</span><span class="p">,</span> <span class="n">resultWho</span><span class="p">,</span> <span class="n">requestCode</span><span class="p">,</span> <span class="n">startFlags</span><span class="p">,</span> <span class="n">profilerInfo</span><span class="p">,</span> <span class="n">bOptions</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span>
+                               <span class="kc">true</span> <span class="cm">/*validateIncomingUser*/</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">private</span> <span class="kt">int</span> <span class="nf">startActivityAsUser</span><span class="p">(</span><span class="n">IApplicationThread</span> <span class="n">caller</span><span class="p">,</span> <span class="n">String</span> <span class="n">callingPackage</span><span class="p">,</span>
+                                <span class="nd">@Nullable</span> <span class="n">String</span> <span class="n">callingFeatureId</span><span class="p">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="p">,</span> <span class="n">String</span> <span class="n">resolvedType</span><span class="p">,</span>
+                                <span class="n">IBinder</span> <span class="n">resultTo</span><span class="p">,</span> <span class="n">String</span> <span class="n">resultWho</span><span class="p">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">startFlags</span><span class="p">,</span>
+                                <span class="n">ProfilerInfo</span> <span class="n">profilerInfo</span><span class="p">,</span> <span class="n">Bundle</span> <span class="n">bOptions</span><span class="p">,</span> <span class="kt">int</span> <span class="n">userId</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">validateIncomingUser</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">assertPackageMatchesCallingUid</span><span class="p">(</span><span class="n">callingPackage</span><span class="p">);</span>
+    <span class="n">enforceNotIsolatedCaller</span><span class="p">(</span><span class="s">&quot;startActivityAsUser&quot;</span><span class="p">);</span>
+
+    <span class="n">userId</span> <span class="o">=</span> <span class="n">getActivityStartController</span><span class="p">().</span><span class="na">checkTargetUser</span><span class="p">(</span><span class="n">userId</span><span class="p">,</span> <span class="n">validateIncomingUser</span><span class="p">,</span>
+                                                          <span class="n">Binder</span><span class="p">.</span><span class="na">getCallingPid</span><span class="p">(),</span> <span class="n">Binder</span><span class="p">.</span><span class="na">getCallingUid</span><span class="p">(),</span> <span class="s">&quot;startActivityAsUser&quot;</span><span class="p">);</span>
+
+    <span class="c1">// TODO: Switch to user app stacks here.</span>
+    <span class="k">return</span> <span class="n">getActivityStartController</span><span class="p">().</span><span class="na">obtainStarter</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s">&quot;startActivityAsUser&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setCaller</span><span class="p">(</span><span class="n">caller</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setCallingPackage</span><span class="p">(</span><span class="n">callingPackage</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setCallingFeatureId</span><span class="p">(</span><span class="n">callingFeatureId</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setResolvedType</span><span class="p">(</span><span class="n">resolvedType</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setResultTo</span><span class="p">(</span><span class="n">resultTo</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setResultWho</span><span class="p">(</span><span class="n">resultWho</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setRequestCode</span><span class="p">(</span><span class="n">requestCode</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setStartFlags</span><span class="p">(</span><span class="n">startFlags</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setProfilerInfo</span><span class="p">(</span><span class="n">profilerInfo</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setActivityOptions</span><span class="p">(</span><span class="n">bOptions</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">setUserId</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+        <span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>上面都是一些权限检查，通过一连串调用，走到了ActivityStarter里，调用了execute：</p>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span> <span class="nf">execute</span><span class="p">()</span> <span class="p">{</span>
+    <span class="p">...</span>     
+    <span class="n">res</span> <span class="o">=</span> <span class="n">executeRequest</span><span class="p">(</span><span class="n">mRequest</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">int</span> <span class="nf">executeRequest</span><span class="p">(</span><span class="n">Request</span> <span class="n">request</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="p">...</span>
+
+     <span class="n">mLastStartActivityResult</span> <span class="o">=</span> <span class="n">startActivityUnchecked</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sourceRecord</span><span class="p">,</span> <span class="n">voiceSession</span><span class="p">,</span>
+                <span class="n">request</span><span class="p">.</span><span class="na">voiceInteractor</span><span class="p">,</span> <span class="n">startFlags</span><span class="p">,</span> <span class="kc">true</span> <span class="cm">/* doResume */</span><span class="p">,</span> <span class="n">checkedOptions</span><span class="p">,</span> <span class="n">inTask</span><span class="p">,</span>
+                <span class="n">restrictedBgActivity</span><span class="p">,</span> <span class="n">intentGrants</span><span class="p">);</span>
+
+       <span class="p">...</span>
+
+        <span class="k">return</span> <span class="n">mLastStartActivityResult</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div>
+<p>接着调用了startActivityUnchecked方法，继续看这个方法：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">int</span> <span class="nf">startActivityUnchecked</span><span class="p">(</span><span class="kd">final</span> <span class="n">ActivityRecord</span> <span class="n">r</span><span class="p">,</span> <span class="n">ActivityRecord</span> <span class="n">sourceRecord</span><span class="p">,</span>
+            <span class="n">IVoiceInteractionSession</span> <span class="n">voiceSession</span><span class="p">,</span> <span class="n">IVoiceInteractor</span> <span class="n">voiceInteractor</span><span class="p">,</span>
+            <span class="kt">int</span> <span class="n">startFlags</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">doResume</span><span class="p">,</span> <span class="n">ActivityOptions</span> <span class="n">options</span><span class="p">,</span> <span class="n">Task</span> <span class="n">inTask</span><span class="p">,</span>
+            <span class="kt">boolean</span> <span class="n">restrictedBgActivity</span><span class="p">,</span> <span class="n">NeededUriGrants</span> <span class="n">intentGrants</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">startActivityInner</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sourceRecord</span><span class="p">,</span> <span class="n">voiceSession</span><span class="p">,</span> <span class="n">voiceInteractor</span><span class="p">,</span>
+                <span class="n">startFlags</span><span class="p">,</span> <span class="n">doResume</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">inTask</span><span class="p">,</span> <span class="n">restrictedBgActivity</span><span class="p">,</span> <span class="n">intentGrants</span><span class="p">);</span>
+
+    <span class="p">...</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kt">int</span> <span class="nf">startActivityInner</span><span class="p">(</span><span class="kd">final</span> <span class="n">ActivityRecord</span> <span class="n">r</span><span class="p">,</span> <span class="n">ActivityRecord</span> <span class="n">sourceRecord</span><span class="p">,</span>
+        <span class="n">IVoiceInteractionSession</span> <span class="n">voiceSession</span><span class="p">,</span> <span class="n">IVoiceInteractor</span> <span class="n">voiceInteractor</span><span class="p">,</span>
+        <span class="kt">int</span> <span class="n">startFlags</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">doResume</span><span class="p">,</span> <span class="n">ActivityOptions</span> <span class="n">options</span><span class="p">,</span> <span class="n">Task</span> <span class="n">inTask</span><span class="p">,</span>
+        <span class="kt">boolean</span> <span class="n">restrictedBgActivity</span><span class="p">,</span> <span class="n">NeededUriGrants</span> <span class="n">intentGrants</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="n">mRootWindowContainer</span><span class="p">.</span><span class="na">resumeFocusedStacksTopActivities</span><span class="p">(</span>
+                        <span class="n">mTargetStack</span><span class="p">,</span> <span class="n">mStartActivity</span><span class="p">,</span> <span class="n">mOptions</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kt">boolean</span> <span class="nf">resumeFocusedStacksTopActivities</span><span class="p">(</span>
+        <span class="n">ActivityStack</span> <span class="n">targetStack</span><span class="p">,</span> <span class="n">ActivityRecord</span> <span class="n">target</span><span class="p">,</span> <span class="n">ActivityOptions</span> <span class="n">targetOptions</span><span class="p">)</span> <span class="p">{</span>
+
+   <span class="p">...</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">resumedOnDisplay</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">final</span> <span class="n">ActivityStack</span> <span class="n">focusedStack</span> <span class="o">=</span> <span class="n">display</span><span class="p">.</span><span class="na">getFocusedStack</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">focusedStack</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">result</span> <span class="o">|=</span> <span class="n">focusedStack</span><span class="p">.</span><span class="na">resumeTopActivityUncheckedLocked</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">targetOptions</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">targetStack</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">result</span> <span class="o">|=</span> <span class="n">resumeHomeActivity</span><span class="p">(</span><span class="kc">null</span> <span class="cm">/* prev */</span><span class="p">,</span> <span class="s">&quot;no-focusable-task&quot;</span><span class="p">,</span>
+                        <span class="n">display</span><span class="p">.</span><span class="na">getDefaultTaskDisplayArea</span><span class="p">());</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>这里会调用resumeTopActivityUncheckedLocked：</p>
+<div class="highlight"><pre><span></span><code><span class="kt">boolean</span> <span class="nf">resumeTopActivityUncheckedLocked</span><span class="p">(</span><span class="n">ActivityRecord</span> <span class="n">prev</span><span class="p">,</span> <span class="n">ActivityOptions</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span>
+
+   <span class="p">...</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">resumeTopActivityInnerLocked</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">options</span><span class="p">);</span>
+   <span class="p">...</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>继续走到resumeTopActivityInnerLocked：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">resumeTopActivityInnerLocked</span><span class="p">(</span><span class="n">ActivityRecord</span> <span class="n">prev</span><span class="p">,</span> <span class="n">ActivityOptions</span> <span class="n">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">mResumedActivity</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">pausing</span> <span class="o">|=</span> <span class="n">startPausingLocked</span><span class="p">(</span><span class="n">userLeaving</span><span class="p">,</span> <span class="kc">false</span> <span class="p">,</span> <span class="n">next</span><span class="p">);</span>
+    <span class="p">}</span>
+
+        <span class="n">mStackSupervisor</span><span class="p">.</span><span class="na">startSpecificActivity</span><span class="p">(</span><span class="n">next</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>startPausingLocked方法主要是通知Launcher进入Pause状态，在它进入这个状态后，在ActivityStackSupervisor的startSpecificActivity方法里判断新的app进程状态做出不同响应。一起看下这个方法：</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span> <span class="nf">startSpecificActivity</span><span class="p">(</span><span class="n">ActivityRecord</span> <span class="n">r</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">andResume</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">checkConfig</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 获取启动的activity进程信息</span>
+    <span class="kd">final</span> <span class="n">WindowProcessController</span> <span class="n">wpc</span> <span class="o">=</span>
+            <span class="n">mService</span><span class="p">.</span><span class="na">getProcessController</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">processName</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">info</span><span class="p">.</span><span class="na">applicationInfo</span><span class="p">.</span><span class="na">uid</span><span class="p">);</span>
+
+    <span class="kt">boolean</span> <span class="n">knownToBeDead</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="c1">//如果进程存在，并且进程中有线程存在，就启动一个同应用的activity</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">wpc</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">wpc</span><span class="p">.</span><span class="na">hasThread</span><span class="p">())</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">realStartActivityLocked</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">wpc</span><span class="p">,</span> <span class="n">andResume</span><span class="p">,</span> <span class="n">checkConfig</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">RemoteException</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Slog</span><span class="p">.</span><span class="na">w</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&quot;Exception when starting activity &quot;</span>
+                    <span class="o">+</span> <span class="n">r</span><span class="p">.</span><span class="na">intent</span><span class="p">.</span><span class="na">getComponent</span><span class="p">().</span><span class="na">flattenToShortString</span><span class="p">(),</span> <span class="n">e</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// If a dead object exception was thrown -- fall through to</span>
+        <span class="c1">// restart the application.</span>
+        <span class="n">knownToBeDead</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//否则通过AMS向Zygote进程请求创建新进程</span>
+    <span class="n">r</span><span class="p">.</span><span class="na">notifyUnknownVisibilityLaunchedForKeyguardTransition</span><span class="p">();</span>
+
+    <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isTop</span> <span class="o">=</span> <span class="n">andResume</span> <span class="o">&amp;&amp;</span> <span class="n">r</span><span class="p">.</span><span class="na">isTopRunningActivity</span><span class="p">();</span>
+    <span class="n">mService</span><span class="p">.</span><span class="na">startProcessAsync</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">knownToBeDead</span><span class="p">,</span> <span class="n">isTop</span><span class="p">,</span> <span class="n">isTop</span> <span class="o">?</span> <span class="s">&quot;top-activity&quot;</span> <span class="p">:</span> <span class="s">&quot;activity&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>到这里就完成了Launcher和AMS的通信、以及AMS和zygote的通信，接下来创建要启动的app的线程，也就是ActivityThread。</p>
+<h2 id="app">启动流程三（app）<a class="headerlink" href="#app" title="Permanent link">&para;</a></h2>
+<h3 id="_1">新的进程启动<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>上面说到zygote启动新的进程时标记ActivityThread.main函数，在zygote创建好新进程后反射调用此方法，现在处于新的app进程中。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+   <span class="p">...</span>
+
+
+    <span class="n">Looper</span><span class="p">.</span><span class="na">prepareMainLooper</span><span class="p">();</span>
+
+   <span class="p">...</span>
+    <span class="n">ActivityThread</span> <span class="n">thread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ActivityThread</span><span class="p">();</span>
+    <span class="n">thread</span><span class="p">.</span><span class="na">attach</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="n">startSeq</span><span class="p">);</span>
+
+    <span class="p">...</span>
+
+    <span class="n">Looper</span><span class="p">.</span><span class="na">loop</span><span class="p">();</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">attach</span><span class="p">(</span><span class="kt">boolean</span> <span class="n">system</span><span class="p">,</span> <span class="kt">long</span> <span class="n">startSeq</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">mgr</span><span class="p">.</span><span class="na">attachApplication</span><span class="p">(</span><span class="n">mAppThread</span><span class="p">,</span> <span class="n">startSeq</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">RemoteException</span> <span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="n">ex</span><span class="p">.</span><span class="na">rethrowFromSystemServer</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">attachApplication</span><span class="p">(</span><span class="n">IApplicationThread</span> <span class="n">thread</span><span class="p">,</span> <span class="kt">long</span> <span class="n">startSeq</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">synchronized</span> <span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="p">{</span>
+       <span class="p">...</span>
+        <span class="n">attachApplicationLocked</span><span class="p">(</span><span class="n">thread</span><span class="p">,</span> <span class="n">callingPid</span><span class="p">,</span> <span class="n">callingUid</span><span class="p">,</span> <span class="n">startSeq</span><span class="p">);</span>
+       <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">attachApplicationLocked</span><span class="p">(</span><span class="nd">@NonNull</span> <span class="n">IApplicationThread</span> <span class="n">thread</span><span class="p">,</span>
+                                        <span class="kt">int</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">int</span> <span class="n">callingUid</span><span class="p">,</span> <span class="kt">long</span> <span class="n">startSeq</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+        <span class="c1">//1</span>
+        <span class="n">thread</span><span class="p">.</span><span class="na">bindApplication</span><span class="p">(</span><span class="n">processName</span><span class="p">,</span> <span class="n">appInfo</span><span class="p">,</span> <span class="n">providerList</span><span class="p">,</span>
+                               <span class="n">instr2</span><span class="p">.</span><span class="na">mClass</span><span class="p">,</span>
+                               <span class="n">profilerInfo</span><span class="p">,</span> <span class="n">instr2</span><span class="p">.</span><span class="na">mArguments</span><span class="p">,</span>
+                               <span class="n">instr2</span><span class="p">.</span><span class="na">mWatcher</span><span class="p">,</span>
+                               <span class="n">instr2</span><span class="p">.</span><span class="na">mUiAutomationConnection</span><span class="p">,</span> <span class="n">testMode</span><span class="p">,</span>
+                               <span class="n">mBinderTransactionTrackingEnabled</span><span class="p">,</span> <span class="n">enableTrackAllocation</span><span class="p">,</span>
+                               <span class="n">isRestrictedBackupMode</span> <span class="o">||</span> <span class="o">!</span><span class="n">normalMode</span><span class="p">,</span> <span class="n">app</span><span class="p">.</span><span class="na">isPersistent</span><span class="p">(),</span>
+                               <span class="k">new</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="na">getWindowProcessController</span><span class="p">().</span><span class="na">getConfiguration</span><span class="p">()),</span>
+                               <span class="n">app</span><span class="p">.</span><span class="na">compat</span><span class="p">,</span> <span class="n">getCommonServicesLocked</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="na">isolated</span><span class="p">),</span>
+                               <span class="n">mCoreSettingsObserver</span><span class="p">.</span><span class="na">getCoreSettingsLocked</span><span class="p">(),</span>
+                               <span class="n">buildSerial</span><span class="p">,</span> <span class="n">autofillOptions</span><span class="p">,</span> <span class="n">contentCaptureOptions</span><span class="p">,</span>
+                               <span class="n">app</span><span class="p">.</span><span class="na">mDisabledCompatChanges</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">normalMode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">//2</span>
+            <span class="n">didSomething</span> <span class="o">=</span> <span class="n">mAtmInternal</span><span class="p">.</span><span class="na">attachApplication</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="na">getWindowProcessController</span><span class="p">());</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Slog</span><span class="p">.</span><span class="na">wtf</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&quot;Exception thrown launching activities in &quot;</span> <span class="o">+</span> <span class="n">app</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+            <span class="n">badApp</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>这里主要创建了Looper和ActivityThread对象，然后将当前应用ApplicationThread注册到AMS中，ApplicationThread是ActivityThread的内部类实现了IApplicationThread.Stub用此对象可跨进程通信。</p>
+<p>我们分两步看这个逻辑：</p>
+<p>1、在AMS绑定ApplicationThread时，发送了一个H.BIND_APPLICATION的Message，在Handler中处理该消息时调用了Application的onCreate方法。</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">bindApplication</span><span class="p">(</span><span class="n">String</span> <span class="n">processName</span><span class="p">,</span> <span class="n">ApplicationInfo</span> <span class="n">appInfo</span><span class="p">,</span>
+        <span class="n">ProviderInfoList</span> <span class="n">providerList</span><span class="p">,</span> <span class="n">ComponentName</span> <span class="n">instrumentationName</span><span class="p">,</span>
+        <span class="n">ProfilerInfo</span> <span class="n">profilerInfo</span><span class="p">,</span> <span class="n">Bundle</span> <span class="n">instrumentationArgs</span><span class="p">,</span>
+        <span class="n">IInstrumentationWatcher</span> <span class="n">instrumentationWatcher</span><span class="p">,</span>
+        <span class="n">IUiAutomationConnection</span> <span class="n">instrumentationUiConnection</span><span class="p">,</span> <span class="kt">int</span> <span class="n">debugMode</span><span class="p">,</span>
+        <span class="kt">boolean</span> <span class="n">enableBinderTracking</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">trackAllocation</span><span class="p">,</span>
+        <span class="kt">boolean</span> <span class="n">isRestrictedBackupMode</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">Configuration</span> <span class="n">config</span><span class="p">,</span>
+        <span class="n">CompatibilityInfo</span> <span class="n">compatInfo</span><span class="p">,</span> <span class="n">Map</span> <span class="n">services</span><span class="p">,</span> <span class="n">Bundle</span> <span class="n">coreSettings</span><span class="p">,</span>
+        <span class="n">String</span> <span class="n">buildSerial</span><span class="p">,</span> <span class="n">AutofillOptions</span> <span class="n">autofillOptions</span><span class="p">,</span>
+        <span class="n">ContentCaptureOptions</span> <span class="n">contentCaptureOptions</span><span class="p">,</span> <span class="kt">long</span><span class="o">[]</span> <span class="n">disabledCompatChanges</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="n">sendMessage</span><span class="p">(</span><span class="n">H</span><span class="p">.</span><span class="na">BIND_APPLICATION</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="p">(</span><span class="n">Message</span> <span class="n">msg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">DEBUG_MESSAGES</span><span class="p">)</span> <span class="n">Slog</span><span class="p">.</span><span class="na">v</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&quot;&gt;&gt;&gt; handling: &quot;</span> <span class="o">+</span> <span class="n">codeToString</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="na">what</span><span class="p">));</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="na">what</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="n">BIND_APPLICATION</span><span class="p">:</span>
+            <span class="n">Trace</span><span class="p">.</span><span class="na">traceBegin</span><span class="p">(</span><span class="n">Trace</span><span class="p">.</span><span class="na">TRACE_TAG_ACTIVITY_MANAGER</span><span class="p">,</span> <span class="s">&quot;bindApplication&quot;</span><span class="p">);</span>
+            <span class="n">AppBindData</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">AppBindData</span><span class="p">)</span><span class="n">msg</span><span class="p">.</span><span class="na">obj</span><span class="p">;</span>
+            <span class="n">handleBindApplication</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+            <span class="n">Trace</span><span class="p">.</span><span class="na">traceEnd</span><span class="p">(</span><span class="n">Trace</span><span class="p">.</span><span class="na">TRACE_TAG_ACTIVITY_MANAGER</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+            <span class="p">...</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">handleBindApplication</span><span class="p">(</span><span class="n">AppBindData</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+     <span class="n">mInstrumentation</span><span class="p">.</span><span class="na">callApplicationOnCreate</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">//Application.java</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="p">()</span> <span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>到这里为止，新的app线程已经启动并且绑定了Application</p>
+<h3 id="activity">创建activity<a class="headerlink" href="#activity" title="Permanent link">&para;</a></h3>
+<p>2、在mAtmInternal的attachApplication中通过层层调用到ActivityStackSupervisor.realStartActivityLocked方法。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">boolean</span> <span class="nf">realStartActivityLocked</span><span class="p">(</span><span class="n">ActivityRecord</span> <span class="n">r</span><span class="p">,</span> <span class="n">WindowProcessController</span> <span class="n">proc</span><span class="p">,</span>
+                                <span class="kt">boolean</span> <span class="n">andResume</span><span class="p">,</span> <span class="kt">boolean</span> <span class="n">checkConfig</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="p">{</span>
+
+    <span class="p">...</span>
+
+        <span class="c1">// 创建activity启动事务</span>
+        <span class="kd">final</span> <span class="n">ClientTransaction</span> <span class="n">clientTransaction</span> <span class="o">=</span> <span class="n">ClientTransaction</span><span class="p">.</span><span class="na">obtain</span><span class="p">(</span>
+        <span class="n">proc</span><span class="p">.</span><span class="na">getThread</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="na">appToken</span><span class="p">);</span>
+
+    <span class="kd">final</span> <span class="n">DisplayContent</span> <span class="n">dc</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="na">getDisplay</span><span class="p">().</span><span class="na">mDisplayContent</span><span class="p">;</span>
+    <span class="n">clientTransaction</span><span class="p">.</span><span class="na">addCallback</span><span class="p">(</span><span class="n">LaunchActivityItem</span><span class="p">.</span><span class="na">obtain</span><span class="p">(</span><span class="k">new</span> <span class="n">Intent</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">intent</span><span class="p">),</span>
+                        <span class="n">System</span><span class="p">.</span><span class="na">identityHashCode</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">r</span><span class="p">.</span><span class="na">info</span><span class="p">,</span>
+                        <span class="n">mergedConfiguration</span><span class="p">.</span><span class="na">getGlobalConfiguration</span><span class="p">(),</span>
+                        <span class="n">mergedConfiguration</span><span class="p">.</span><span class="na">getOverrideConfiguration</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="na">compat</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">launchedFromPackage</span><span class="p">,</span> <span class="n">task</span><span class="p">.</span><span class="na">voiceInteractor</span><span class="p">,</span> <span class="n">proc</span><span class="p">.</span><span class="na">getReportedProcState</span><span class="p">(),</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">getSavedState</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="na">getPersistentSavedState</span><span class="p">(),</span> <span class="n">results</span><span class="p">,</span> <span class="n">newIntents</span><span class="p">,</span>
+                        <span class="n">dc</span><span class="p">.</span><span class="na">isNextTransitionForward</span><span class="p">(),</span> <span class="n">proc</span><span class="p">.</span><span class="na">createProfilerInfoIfNeeded</span><span class="p">(),</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">assistToken</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">createFixedRotationAdjustmentsIfNeeded</span><span class="p">()));</span>
+
+    <span class="c1">// Set desired final state.</span>
+    <span class="kd">final</span> <span class="n">ActivityLifecycleItem</span> <span class="n">lifecycleItem</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">andResume</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">lifecycleItem</span> <span class="o">=</span> <span class="n">ResumeActivityItem</span><span class="p">.</span><span class="na">obtain</span><span class="p">(</span><span class="n">dc</span><span class="p">.</span><span class="na">isNextTransitionForward</span><span class="p">());</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">lifecycleItem</span> <span class="o">=</span> <span class="n">PauseActivityItem</span><span class="p">.</span><span class="na">obtain</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">clientTransaction</span><span class="p">.</span><span class="na">setLifecycleStateRequest</span><span class="p">(</span><span class="n">lifecycleItem</span><span class="p">);</span>
+
+    <span class="c1">//执行clientTransaction</span>
+    <span class="n">mService</span><span class="p">.</span><span class="na">getLifecycleManager</span><span class="p">().</span><span class="na">scheduleTransaction</span><span class="p">(</span><span class="n">clientTransaction</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>ClientTransaction管理了activity的启动信息，通过ClientLifecycleManager执行，调用</p>
+<p>scheduleTransaction方法，看下这个方法：</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span> <span class="nf">scheduleTransaction</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="p">{</span>
+    <span class="kd">final</span> <span class="n">IApplicationThread</span> <span class="n">client</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">.</span><span class="na">getClient</span><span class="p">();</span>
+    <span class="n">transaction</span><span class="p">.</span><span class="na">schedule</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">client</span> <span class="k">instanceof</span> <span class="n">Binder</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">transaction</span><span class="p">.</span><span class="na">recycle</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>调用了ClientTransaction类的schedule方法：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="p">()</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="p">{</span>
+    <span class="n">mClient</span><span class="p">.</span><span class="na">scheduleTransaction</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>mClient是一个IApplicationThread接口，上面我们也分析到，它的实现是ApplicationThread，而ApplicationThread是ActivityThread的内部类，我们进去看下：</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">scheduleTransaction</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="p">{</span>
+    <span class="n">ActivityThread</span><span class="p">.</span><span class="na">this</span><span class="p">.</span><span class="na">scheduleTransaction</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>ApplicationThread的scheduleTransaction方法其实是调用了ActivityThread的同名方法。而ActivityThread自身并没有定义这个方法，而是继承自父类ClientTransactionHandler：</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span> <span class="nf">scheduleTransaction</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">transaction</span><span class="p">.</span><span class="na">preExecute</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="n">sendMessage</span><span class="p">(</span><span class="n">ActivityThread</span><span class="p">.</span><span class="na">H</span><span class="p">.</span><span class="na">EXECUTE_TRANSACTION</span><span class="p">,</span> <span class="n">transaction</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>scheduleTransaction方法中发送了EXECUTE_TRANSACTION消息给ActivityThread的H类处理，H肯定是继承自Handler了，来看下：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">H</span> <span class="kd">extends</span> <span class="n">Handler</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="p">(</span><span class="n">Message</span> <span class="n">msg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="na">what</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">...</span>
+                <span class="k">case</span> <span class="n">EXECUTE_TRANSACTION</span><span class="p">:</span>
+                <span class="kd">final</span> <span class="n">ClientTransaction</span> <span class="n">transaction</span> <span class="o">=</span> <span class="p">(</span><span class="n">ClientTransaction</span><span class="p">)</span> <span class="n">msg</span><span class="p">.</span><span class="na">obj</span><span class="p">;</span>
+                <span class="n">mTransactionExecutor</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">isSystem</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="n">transaction</span><span class="p">.</span><span class="na">recycle</span><span class="p">();</span>
+                <span class="p">}</span>
+                <span class="k">break</span><span class="p">;</span>
+                <span class="p">...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>通过handleMessage来处理这个消息，里面又调用了TransactionExecutor的execute方法：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">executeCallbacks</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span>
+    <span class="n">executeLifecycleState</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span>
+    <span class="n">mPendingActions</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+
+<span class="p">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">executeCallbacks</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ClientTransactionItem</span><span class="o">&gt;</span> <span class="n">callbacks</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">.</span><span class="na">getCallbacks</span><span class="p">();</span>
+       <span class="p">...</span>
+
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">callbacks</span><span class="p">.</span><span class="na">size</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">final</span> <span class="n">ClientTransactionItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">callbacks</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> 
+            <span class="p">...</span>
+            <span class="n">item</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">mTransactionHandler</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">mPendingActions</span><span class="p">);</span>  
+        <span class="p">}</span>
+<span class="p">}</span>
+
+ <span class="kd">private</span> <span class="kt">void</span> <span class="nf">executeLifecycleState</span><span class="p">(</span><span class="n">ClientTransaction</span> <span class="n">transaction</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">final</span> <span class="n">ActivityLifecycleItem</span> <span class="n">lifecycleItem</span> <span class="o">=</span> <span class="n">transaction</span><span class="p">.</span><span class="na">getLifecycleStateRequest</span><span class="p">();</span>
+
+     <span class="c1">//生命周期的过渡</span>
+        <span class="n">cycleToPath</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">lifecycleItem</span><span class="p">.</span><span class="na">getTargetState</span><span class="p">(),</span> <span class="kc">true</span> <span class="cm">/* excludeLastState */</span><span class="p">,</span> <span class="n">transaction</span><span class="p">);</span>
+
+        <span class="n">lifecycleItem</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">mTransactionHandler</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">mPendingActions</span><span class="p">);</span>
+        <span class="n">lifecycleItem</span><span class="p">.</span><span class="na">postExecute</span><span class="p">(</span><span class="n">mTransactionHandler</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">mPendingActions</span><span class="p">);</span>
+ <span class="p">}</span>
+</code></pre></div>
+<p>这里分别调用了executeCallbacks和executeLifecycleState，也就是事务Callback和LifecycleState的execute方法，这里的Callback和LifecycleState是在ActivityStackSupervisor的realStartActivityLocked流程创建的，分别对应的是LaunchActivityItem和ResumeActivityItem。来看下这两个execute方法：</p>
+<div class="highlight"><pre><span></span><code><span class="c1">//LaunchActivityItem.java</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="p">(</span><span class="n">ClientTransactionHandler</span> <span class="n">client</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">token</span><span class="p">,</span>
+        <span class="n">PendingTransactionActions</span> <span class="n">pendingActions</span><span class="p">)</span> <span class="p">{</span>
+   <span class="p">...</span>
+    <span class="n">client</span><span class="p">.</span><span class="na">handleLaunchActivity</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pendingActions</span><span class="p">,</span> <span class="kc">null</span> <span class="cm">/* customIntent */</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">//ResumeActivityItem.java</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="p">(</span><span class="n">ClientTransactionHandler</span> <span class="n">client</span><span class="p">,</span> <span class="n">IBinder</span> <span class="n">token</span><span class="p">,</span>
+        <span class="n">PendingTransactionActions</span> <span class="n">pendingActions</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">client</span><span class="p">.</span><span class="na">handleResumeActivity</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="kc">true</span> <span class="cm">/* finalStateRequest */</span><span class="p">,</span> <span class="n">mIsForward</span><span class="p">,</span>
+            <span class="s">&quot;RESUME_ACTIVITY&quot;</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>可以看到这两个execute方法里都是调用了ClientTransactionHandler来处理activity的，而</p>
+<p>ClientTransactionHandler是抽象类，最终又回到了ActivityThread类中，看下：</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="n">Activity</span> <span class="nf">handleLaunchActivity</span><span class="p">(</span><span class="n">ActivityClientRecord</span> <span class="n">r</span><span class="p">,</span>
+
+    <span class="p">...</span>
+
+    <span class="kd">final</span> <span class="n">Activity</span> <span class="n">a</span> <span class="o">=</span> <span class="n">performLaunchActivity</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">customIntent</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>    <span class="kd">private</span> <span class="n">Activity</span> <span class="nf">performLaunchActivity</span><span class="p">(</span><span class="n">ActivityClientRecord</span> <span class="n">r</span><span class="p">,</span> <span class="n">Intent</span> <span class="n">customIntent</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//获取activity信息</span>
+        <span class="n">ActivityInfo</span> <span class="n">aInfo</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="na">activityInfo</span><span class="p">;</span>
+
+        <span class="c1">//拿到启动activity的组件名</span>
+        <span class="n">ComponentName</span> <span class="n">component</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="na">intent</span><span class="p">.</span><span class="na">getComponent</span><span class="p">();</span>
+        <span class="p">...</span>
+
+        <span class="n">ContextImpl</span> <span class="n">appContext</span> <span class="o">=</span> <span class="n">createBaseContextForActivity</span><span class="p">(</span><span class="n">r</span><span class="p">);</span>
+        <span class="n">Activity</span> <span class="n">activity</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">java</span><span class="p">.</span><span class="na">lang</span><span class="p">.</span><span class="na">ClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="n">appContext</span><span class="p">.</span><span class="na">getClassLoader</span><span class="p">();</span>
+            <span class="n">activity</span> <span class="o">=</span> <span class="n">mInstrumentation</span><span class="p">.</span><span class="na">newActivity</span><span class="p">(</span>
+                    <span class="n">cl</span><span class="p">,</span> <span class="n">component</span><span class="p">.</span><span class="na">getClassName</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="na">intent</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="p">...</span>
+
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">Application</span> <span class="n">app</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="na">packageInfo</span><span class="p">.</span><span class="na">makeApplication</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="n">mInstrumentation</span><span class="p">);</span>
+
+           <span class="p">...</span>
+
+                <span class="n">activity</span><span class="p">.</span><span class="na">attach</span><span class="p">(</span><span class="n">appContext</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="n">getInstrumentation</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="na">token</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">ident</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">intent</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">activityInfo</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">parent</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">embeddedID</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">lastNonConfigurationInstances</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">referrer</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">voiceInteractor</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">configCallback</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">.</span><span class="na">assistToken</span><span class="p">);</span>
+
+                <span class="kt">int</span> <span class="n">theme</span> <span class="o">=</span> <span class="n">r</span><span class="p">.</span><span class="na">activityInfo</span><span class="p">.</span><span class="na">getThemeResource</span><span class="p">();</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">theme</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">activity</span><span class="p">.</span><span class="na">setTheme</span><span class="p">(</span><span class="n">theme</span><span class="p">);</span>
+                <span class="p">}</span>
+
+            <span class="p">...</span>
+                <span class="n">activity</span><span class="p">.</span><span class="na">mCalled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">isPersistable</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="n">mInstrumentation</span><span class="p">.</span><span class="na">callActivityOnCreate</span><span class="p">(</span><span class="n">activity</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">state</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">persistentState</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="n">mInstrumentation</span><span class="p">.</span><span class="na">callActivityOnCreate</span><span class="p">(</span><span class="n">activity</span><span class="p">,</span> <span class="n">r</span><span class="p">.</span><span class="na">state</span><span class="p">);</span>
+                <span class="p">}</span>
+
+            <span class="p">...</span>
+        <span class="k">return</span> <span class="n">activity</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div>
+<p>梳理下这个方法做了哪些事情：</p>
+<ul>
+<li>创建启动activity的上下文环境</li>
+<li>通过Instrumentation的newActivity方法，以反射形式创建activity实例</li>
+<li>如果Application不存在的话会创建Application并调用Application的onCreate方法</li>
+<li>初始化activity，通过Activity的attach方法，实例化Window对象，并实现Activity和Window相关联</li>
+<li>通过Instrumentation调用activity的**onCreate**方法</li>
+</ul>
+<p>与handleLaunchActivity类似的，handleResumeActivity则是调用了performResumeActivity方法。其大体上依次做了：</p>
+<ul>
+<li>如果需要，调用待Resume Activity的onNewIntent、onActivityResult回调；</li>
+<li>调用Activity的performResume方法，其中调用了**onResume**回调；</li>
+</ul>
+<p>这样，app就启动完成了。</p>
+<p>最后，给大家看下整体的流程图（其实是从网上盗的图.......哈哈）</p>
+<p><img alt="app启动流程" src="../app_startup.assets/app_startup.png" /></p>
+<h2 id="_2">总结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>通过上面的分析，我们基本把app启动流程走完了，看起来比较复杂，其实通过整体分析，还是能走通的，遇到流程不通时，也可以debug。</p>
+<ul>
+<li>点击图标，Launcher向AMS请求启动app</li>
+<li>AMS收到请求后，记录app的信息，并告知Launcher进入pause状态</li>
+<li>Launcher进入pause状态后，告知AMS</li>
+<li>AMS检测新的app进程时候已经启动，否则通过Zygote创建新的进程并启动ActivityThread的main方法</li>
+<li>进程创建好后，调用上面的ActivityThread.main()</li>
+<li>ActivityThread中H处理需要启动Activity的请求消息</li>
+</ul>
+<p>本人能力有限，在分析过程中，代码有所删减，如果文章中有写得不对的地方，欢迎在留言区留言大家一起讨论，共同学习进步。如果觉得我的文章给予你帮助，也请给我一个喜欢和关注。</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../android_startup/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Android系统启动流程" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              Android系统启动流程
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../about/" class="md-footer__link md-footer__link--next" aria-label="下一页: 关于" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              关于
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2016 - 2021 weizi-era
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.ddd52ceb.min.js"></script>
+      
+    
+  </body>
+</html>
